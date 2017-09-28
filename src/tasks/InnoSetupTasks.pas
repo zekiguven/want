@@ -89,7 +89,6 @@ type
 
 const
   ISCC_FILENAME = 'ISCC.exe';
-  COMPIL32_FILENAME = 'COMPIL32.exe';
 
 implementation
 
@@ -170,9 +169,7 @@ begin
   if PathExists(source) then Begin
     if FDefine<>'' then
       Result := Result + ' "/D' +FDefine+'"';
-
     Result := Result + ' ' + ToSystemPath(source);
-
     Result := Result + ' ' + inherited BuildArguments;
   end else
     TaskFailure(Format('Could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
