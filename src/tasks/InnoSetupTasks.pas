@@ -63,10 +63,11 @@ type
   private
     FSource: TPath;
     FISCCPath: TPath;
+    FDefine:String;
   protected
     procedure HandleOutputLine(Line :string); override;
     function FindISCC: string;
-      
+
     function BuildArguments: string; override;
   public
     constructor Create(Owner: TScriptElement); override;
@@ -77,10 +78,10 @@ type
     procedure Init; override;
     procedure Execute; override;
   published
-    property basedir;       
+    property basedir;
     property source: TPath read FSource write FSource;
     property isccpath: TPath read FISCCPath write FISCCPath;
-
+    property define:string read FDefine write FDefine;
     property Arguments;
     property ArgumentList stored false;
     property SkipLines;
@@ -88,6 +89,7 @@ type
 
 const
   ISCC_FILENAME = 'ISCC.exe';
+  COMPIL32_FILENAME = 'COMPIL32.exe';
 
 implementation
 
@@ -106,9 +108,10 @@ begin
     TaskError('Could not find Inno Setup Compiler (ISCC)')
   else Begin
     // User can just give us the path, we will add the filename
-    if (ExtractFileName(Result) = '') then Result := Result + ISCC_FILENAME
+    if (ExtractFileName(Result) = '') then
+      Result := Result + ISCC_FILENAME
     else if (ExtractFileExt(Result) = '') then
-      Result := Result + '\' + ISCC_FILENAME;  // Very probably there is just a \ missing  
+      Result := Result + '\' + ISCC_FILENAME;  // Very probably there is just a \ missing
   end;
 end;
 
@@ -165,7 +168,11 @@ begin
   // Note: ISCC does only support one script file, so wild cards are not allowed
   Log(vlVerbose, 'source %s', [ToRelativePath(source)]);
   if PathExists(source) then Begin
+    if FDefine<>'' then
+      Result := Result + ' "/D' +FDefine+'"';
+
     Result := Result + ' ' + ToSystemPath(source);
+
     Result := Result + ' ' + inherited BuildArguments;
   end else
     TaskFailure(Format('Could not find %s to compile', [ToSystemPath(PathConcat(BasePath, source))]));
