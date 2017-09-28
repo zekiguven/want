@@ -21,6 +21,7 @@
     @brief Enables want to compile InnoSetup Scripts using ISCC.exe
 
     @author Michael Elsdörfer
+    @author Zeki Guven
 
     TODO : Would be great if the path of the InnoSetup Compiler could be loaded
            from registry or from somewhere else. Until I'm not aware of such a
