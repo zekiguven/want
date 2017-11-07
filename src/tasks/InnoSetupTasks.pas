@@ -164,12 +164,30 @@ begin
 end;
 
 function TInnoSetupCompileTask.BuildArguments: string;
+var
+  LDefList:TStringList;
+  LDefPar: String;
+  I: Integer;
 begin
   // Note: ISCC does only support one script file, so wild cards are not allowed
   Log(vlVerbose, 'source %s', [ToRelativePath(source)]);
   if PathExists(source) then Begin
     if FDefine<>'' then
-      Result := Result + ' "/D' +FDefine+'"';
+    begin
+      LDefList:=TStringList.Create;
+      //aaa=bbb,ccc=ddd
+      StrToStrings(FDefine, ',', LDefList);
+      for I := 0 to LDefList.Count-1 do
+      begin
+        LDefPar:='/D' +LDefList[I];
+        if Pos(' ',LDefList[I])>0
+          then LDefPar:='"'+LDefPar+'"';
+
+        Result := Result +' '+LDefPar;
+      end;
+      LDefList.Free;
+
+    end;
     Result := Result + ' ' + ToSystemPath(source);
     Result := Result + ' ' + inherited BuildArguments;
   end else
